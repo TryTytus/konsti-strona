@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evelyn & Arthur | Piano & Voice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Monsieur+La+Doulaise&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
+    <style>
+        /* --- CORE AESTHETICS --- */
+        :root {
+            --bg-color: #121212;
+            --text-main: #e0e0e0;
+            --gold: #d4af37;
+            --gold-dim: #8a7022;
+            --paper-overlay: url('https://www.transparenttextures.com/patterns/stardust.png');
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Cormorant Garamond', serif;
+            overflow-x: hidden;
+            cursor: none; /* Custom cursor */
+        }
+
+        /* Grainy Texture Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: var(--paper-overlay);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 9999;
+            animation: grain 8s steps(10) infinite;
+        }
+
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-1%, -1%); }
+            20% { transform: translate(1%, 1%); }
+            30% { transform: translate(-2%, 2%); }
+            40% { transform: translate(3%, -3%); }
+            50% { transform: translate(-3%, 3%); }
+            60% { transform: translate(4%, -4%); }
+            70% { transform: translate(-4%, 4%); }
+            80% { transform: translate(2%, -2%); }
+            90% { transform: translate(-2%, 2%); }
+        }
+
+        /* Fonts */
+        h1, h2, h3 {
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.05em;
+        }
+        .handwriting {
+            font-family: 'Monsieur La Doulaise', cursive;
+        }
+
+        /* --- CUSTOM CURSOR --- */
+        .cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 10000;
+            transition: width 0.3s, height 0.3s, background 0.3s;
+            mix-blend-mode: difference;
+        }
+        .cursor-dot {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: var(--gold);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 10001;
+        }
+
+        /* --- ANIMATIONS --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .parallax-img {
+            transition: transform 0.1s linear;
+        }
+
+        /* Loading Curtain */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 1.5s ease-in-out;
+        }
+        #loader-text {
+            color: var(--gold);
+            font-size: 2rem;
+            opacity: 0;
+            animation: fadeInOut 2s forwards;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; letter-spacing: 0px;}
+            50% { opacity: 1; letter-spacing: 5px;}
+            100% { opacity: 0; letter-spacing: 10px;}
+        }
+
+        /* --- COMPONENTS --- */
+        .btn-classic {
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 10px 30px;
+            text-transform: uppercase;
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+        }
+        .btn-classic::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gold);
+            transition: left 0.4s ease;
+            z-index: -1;
+        }
+        .btn-classic:hover::before {
+            left: 0;
+        }
+        .btn-classic:hover {
+            color: #000;
+        }
+
+        .ornament-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 4rem 0;
+            color: var(--gold-dim);
+            opacity: 0.7;
+        }
+        .ornament-divider::before, .ornament-divider::after {
+            content: "";
+            height: 1px;
+            width: 100px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 0 20px;
+        }
+
+        /* Navigation */
+        nav {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+            transition: padding 0.3s ease;
+        }
+
+        /* Image Styling */
+        .framed-image {
+            position: relative;
+            padding: 10px;
+            border: 1px solid var(--gold-dim);
+        }
+        .framed-image img {
+            display: block;
+            filter: sepia(30%) contrast(110%);
+            transition: filter 0.5s ease;
+        }
+        .framed-image:hover img {
+            filter: sepia(0%) contrast(100%);
+        }
+        .framed-image::after {
+            content: '';
+            position: absolute;
+            top: -5px; left: -5px; right: -5px; bottom: -5px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            z-index: -1;
+        }
+
+        /* Floating Music Notes */
+        .note {
+            position: absolute;
+            color: var(--gold);
+            opacity: 0;
+            animation: floatUp 8s linear infinite;
+            font-size: 1.5rem;
+            pointer-events: none;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-[#d4af37] selection:text-black">
+
+    <!-- Custom Cursor Elements -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+
+    <!-- Loader -->
+    <div id="loader">
+        <div id="loader-text" class="handwriting text-4xl md:text-6xl text-[#d4af37]">Evelyn & Arthur</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-0 w-full z-40 px-6 py-6 flex justify-between items-center mix-blend-difference text-[#d4af37]">
+        <div class="text-xl font-bold tracking-widest font-serif">E & A</div>
+        <div class="hidden md:flex space-x-8 text-sm uppercase tracking-widest">
+            <a href="#about" class="hover:text-white transition-colors duration-300">The Artists</a>
+            <a href="#repertoire" class="hover:text-white transition-colors duration-300">Repertoire</a>
+            <a href="#gallery" class="hover:text-white transition-colors duration-300">Visuals</a>
+            <a href="#contact" class="hover:text-white transition-colors duration-300">Inquire</a>
+        </div>
+        <!-- Mobile Menu Icon -->
+        <button class="md:hidden text-[#d4af37] hover:text-white">
+            <i class="fas fa-bars text-2xl"></i>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative h-screen w-full overflow-hidden flex flex-col justify-center items-center text-center">
+        <!-- Background Image with Parallax -->
+        <div class="absolute top-0 left-0 w-full h-[120%] bg-cover bg-center z-0 parallax-wrapper" 
+             style="background-image: url('https://images.unsplash.com/photo-1552422535-c45813c61732?q=80&w=2070&auto=format&fit=crop'); filter: brightness(0.4);">
+        </div>
+        
+        <div class="relative z-10 px-4">
+            <p class="handwriting text-3xl md:text-5xl text-[#d4af37] mb-4 reveal delay-200">Musica Animae</p>
+            <h1 class="text-5xl md:text-8xl text-white mb-6 leading-tight reveal delay-400">
+                The Voice.<br>The Keys.
+            </h1>
+            <div class="w-24 h-[1px] bg-[#d4af37] mx-auto my-8 reveal delay-500"></div>
+            <p class="text-lg md:text-xl text-gray-300 max-w-xl mx-auto font-light italic reveal delay-600">
+                An elegant fusion of classical piano and soulful vocals, curating timeless moments for discerning audiences.
+            </p>
+            <div class="mt-12 reveal delay-700">
+                <a href="#repertoire" class="btn-classic inline-block">Listen</a>
+            </div>
+        </div>
+
+        <!-- Floating Notes Container -->
+        <div id="notes-container" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce text-[#d4af37] opacity-70">
+            <span class="text-xs tracking-[0.3em] uppercase block mb-2">Scroll</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section id="about" class="relative py-24 px-6 md:px-12 max-w-7xl mx-auto">
+        <div class="ornament-divider reveal"><i class="fas fa-music"></i></div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <!-- Text Content -->
+            <div class="order-2 md:order-1 reveal">
+                <h2 class="text-4xl text-[#d4af37] mb-6">The Collaboration</h2>
+                <p class="text-xl leading-relaxed text-gray-400 mb-6 first-letter:text-5xl first-letter:text-[#d4af37] first-letter:float-left first-letter:mr-3 first-letter:font-serif">
+                    Ideally suited for galas, private salons, and artistic gatherings, Evelyn and Arthur bring a century of musical tradition into the present moment. We believe in the authenticity of sound—no backing tracks, no synthesis—only the pure resonance of wood, string, and breath.
+                </p>
+                <p class="text-lg text-gray-500 italic mb-8">
+                    "They don't just perform; they haunt the room with beauty." — The Arts Review
+                </p>
+                <div class="flex space-x-12 border-t border-[#333] pt-8">
+                    <div>
+                        <span class="block text-3xl text-white font-serif">12</span>
+                        <span class="text-xs tracking-widest text-[#d4af37] uppercase">Years Together</span>
+                    </div>
+                    <div>
+                        <span class="block text-3xl text-white font-serif">500+</span>
+                        <span class="text-xs tracking-widest text-[#d4af37] uppercase">Performances</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Stack -->
+            <div class="order-1 md:order-2 relative h-[500px] w-full flex justify-center items-center reveal delay-200">
+                <!-- Back Image -->
+                <div class="absolute top-0 right-0 w-2/3 h-4/5 framed-image transform rotate-3 hover:rotate-0 transition-transform duration-700 z-10">
+                    <img src="https://images.unsplash.com/photo-1514117445516-2ecfc9c4ec90?q=80&w=987&auto=format&fit=crop" alt="Piano" class="w-full h-full object-cover">
+                </div>
+                <!-- Front Image -->
+                <div class="absolute bottom-0 left-0 w-3/5 h-3/5 framed-image transform -rotate-3 translate-y-10 hover:rotate-0 transition-transform duration-700 z-20 bg-[#1a1a1a]">
+                    <img src="https://images.unsplash.com/photo-1516280440614-6697288d5d38?q=80&w=1470&auto=format&fit=crop" alt="Singer" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Repertoire / Audio Section -->
+    <section id="repertoire" class="py-24 bg-[#0a0a0a] relative border-t border-[#d4af3733]">
+        <div class="max-w-5xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <p class="handwriting text-4xl text-gray-500 mb-2">Auditory Experience</p>
+                <h2 class="text-4xl md:text-5xl text-[#d4af37]">Selected Works</h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Track 1 -->
+                <div class="group relative p-6 border border-[#333] hover:border-[#d4af37] transition-colors duration-500 flex flex-col md:flex-row items-center justify-between reveal">
+                    <div class="flex items-center space-x-6 w-full md:w-auto">
+                        <div class="w-12 h-12 rounded-full border border-[#d4af37] flex items-center justify-center text-[#d4af37] group-hover:bg-[#d4af37] group-hover:text-black transition-colors cursor-pointer play-btn" data-track="1">
+                            <i class="fas fa-play ml-1"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl text-white">Clair de Lune</h3>
+                            <p class="text-sm text-gray-500 uppercase tracking-widest">Debussy - Arr. for Voice</p>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/3 mt-4 md:mt-0 h-1 bg-[#222] rounded-full overflow-hidden">
+                        <div class="h-full bg-[#d4af37] w-0 transition-all duration-[5000ms] ease-linear progress-bar"></div>
+                    </div>
+                    <span class="hidden md:block text-gray-400 font-serif italic">04:12</span>
+                </div>
+
+                <!-- Track 2 -->
+                <div class="group relative p-6 border border-[#333] hover:border-[#d4af37] transition-colors duration-500 flex flex-col md:flex-row items-center justify-between reveal delay-100">
+                    <div class="flex items-center space-x-6 w-full md:w-auto">
+                        <div class="w-12 h-12 rounded-full border border-[#d4af37] flex items-center justify-center text-[#d4af37] group-hover:bg-[#d4af37] group-hover:text-black transition-colors cursor-pointer play-btn" data-track="2">
+                            <i class="fas fa-play ml-1"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl text-white">Summertime</h3>
+                            <p class="text-sm text-gray-500 uppercase tracking-widest">Gershwin - Jazz Ballad</p>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/3 mt-4 md:mt-0 h-1 bg-[#222] rounded-full overflow-hidden">
+                        <div class="h-full bg-[#d4af37] w-0 transition-all duration-[5000ms] ease-linear progress-bar"></div>
+                    </div>
+                    <span class="hidden md:block text-gray-400 font-serif italic">03:45</span>
+                </div>
+
+                <!-- Track 3 -->
+                <div class="group relative p-6 border border-[#333] hover:border-[#d4af37] transition-colors duration-500 flex flex-col md:flex-row items-center justify-between reveal delay-200">
+                    <div class="flex items-center space-x-6 w-full md:w-auto">
+                        <div class="w-12 h-12 rounded-full border border-[#d4af37] flex items-center justify-center text-[#d4af37] group-hover:bg-[#d4af37] group-hover:text-black transition-colors cursor-pointer play-btn" data-track="3">
+                            <i class="fas fa-play ml-1"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl text-white">Nocturne in C# Minor</h3>
+                            <p class="text-sm text-gray-500 uppercase tracking-widest">Chopin - Instrumental</p>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/3 mt-4 md:mt-0 h-1 bg-[#222] rounded-full overflow-hidden">
+                        <div class="h-full bg-[#d4af37] w-0 transition-all duration-[5000ms] ease-linear progress-bar"></div>
+                    </div>
+                    <span class="hidden md:block text-gray-400 font-serif italic">04:05</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Parallax Quote Section -->
+    <div class="relative py-32 flex items-center justify-center bg-fixed bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1558584673-c834fb1cc3ca?q=80&w=1974&auto=format&fit=crop');">
+        <div class="absolute inset-0 bg-black opacity-70"></div>
+        <div class="relative z-10 max-w-3xl text-center px-6 reveal">
+            <i class="fas fa-quote-left text-[#d4af37] text-3xl mb-6"></i>
+            <p class="text-3xl md:text-5xl font-serif text-white leading-normal">
+                "Where words fail, music speaks."
+            </p>
+            <p class="mt-6 text-[#d4af37] uppercase tracking-widest text-sm">— Hans Christian Andersen</p>
+        </div>
+    </div>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-24 px-6 md:px-12 bg-[#121212]">
+        <div class="ornament-divider reveal"><i class="fas fa-feather-alt"></i></div>
+        <h2 class="text-4xl md:text-5xl text-center text-[#d4af37] mb-16 font-serif reveal">Portraits & Moments</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            <!-- Gallery Item 1 -->
+            <div class="reveal group relative overflow-hidden h-96 cursor-none">
+                <img src="https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=2070&auto=format&fit=crop" alt="Piano Hands" class="w-full h-full object-cover transition-transform duration-1000 transform group-hover:scale-110 filter grayscale group-hover:grayscale-0">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                <div class="absolute bottom-6 left-6">
+                    <p class="handwriting text-3xl text-[#d4af37]">The Grand Hall</p>
+                </div>
+            </div>
+
+             <!-- Gallery Item 2 (Large) -->
+             <div class="reveal delay-100 md:col-span-2 group relative overflow-hidden h-96">
+                <img src="https://images.unsplash.com/photo-1596125077539-f2e270e1f541?q=80&w=2070&auto=format&fit=crop" alt="Microphone" class="w-full h-full object-cover transition-transform duration-1000 transform group-hover:scale-110 filter grayscale group-hover:grayscale-0">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                <div class="absolute bottom-6 left-6">
+                    <p class="handwriting text-3xl text-[#d4af37]">Midnight Jazz</p>
+                </div>
+            </div>
+
+            <!-- Gallery Item 3 -->
+            <div class="reveal delay-200 group relative overflow-hidden h-96">
+                <img src="https://images.unsplash.com/photo-1465847899078-b49303bb0f05?q=80&w=2074&auto=format&fit=crop" alt="Sheet Music" class="w-full h-full object-cover transition-transform duration-1000 transform group-hover:scale-110 filter grayscale group-hover:grayscale-0">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                 <div class="absolute bottom-6 left-6">
+                    <p class="handwriting text-3xl text-[#d4af37]">Written Notes</p>
+                </div>
+            </div>
+
+             <!-- Gallery Item 4 -->
+             <div class="reveal delay-300 md:col-span-2 group relative overflow-hidden h-96">
+                <img src="https://images.unsplash.com/photo-1525926477800-7a3be5800fcb?q=80&w=1935&auto=format&fit=crop" alt="Performance" class="w-full h-full object-cover transition-transform duration-1000 transform group-hover:scale-110 filter grayscale group-hover:grayscale-0">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                 <div class="absolute bottom-6 left-6">
+                    <p class="handwriting text-3xl text-[#d4af37]">Live at The Savoy</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 relative overflow-hidden">
+        <!-- Decorative background element -->
+        <div class="absolute top-10 right-10 text-[20rem] text-[#1a1a1a] font-serif leading-none z-0 pointer-events-none select-none opacity-50">
+            &
+        </div>
+
+        <div class="max-w-3xl mx-auto px-6 relative z-10 text-center">
+            <h2 class="text-4xl md:text-5xl text-white mb-4 reveal">Request a Performance</h2>
+            <p class="text-gray-400 mb-12 font-light reveal">For private galas, weddings, and artistic collaborations.</p>
+
+            <form class="space-y-8 text-left reveal delay-200">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="relative">
+                        <input type="text" id="name" class="w-full bg-transparent border-b border-[#444] py-3 text-[#d4af37] focus:outline-none focus:border-[#d4af37] transition-colors" placeholder=" ">
+                        <label for="name" class="absolute left-0 top-3 text-gray-500 transition-all duration-300 pointer-events-none font-serif">Your Name</label>
+                    </div>
+                    <div class="relative">
+                        <input type="email" id="email" class="w-full bg-transparent border-b border-[#444] py-3 text-[#d4af37] focus:outline-none focus:border-[#d4af37] transition-colors" placeholder=" ">
+                        <label for="email" class="absolute left-0 top-3 text-gray-500 transition-all duration-300 pointer-events-none font-serif">Email Address</label>
+                    </div>
+                </div>
+                <div class="relative mt-8">
+                    <textarea id="message" rows="4" class="w-full bg-transparent border-b border-[#444] py-3 text-[#d4af37] focus:outline-none focus:border-[#d4af37] transition-colors resize-none" placeholder=" "></textarea>
+                    <label for="message" class="absolute left-0 top-3 text-gray-500 transition-all duration-300 pointer-events-none font-serif">Details of the Occasion</label>
+                </div>
+                
+                <div class="text-center mt-12">
+                    <button type="button" class="btn-classic inline-block px-12 py-4">Send Correspondence</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-[#222] text-center relative bg-[#080808]">
+        <div class="mb-6 text-[#d4af37]">
+            <i class="fab fa-instagram mx-4 text-xl hover:text-white cursor-pointer transition"></i>
+            <i class="fab fa-spotify mx-4 text-xl hover:text-white cursor-pointer transition"></i>
+            <i class="fab fa-youtube mx-4 text-xl hover:text-white cursor-pointer transition"></i>
+        </div>
+        <p class="text-gray-600 font-serif text-sm">© 2023 Evelyn & Arthur. All rights reserved.</p>
+        <div class="mt-4">
+            <span class="text-[10px] tracking-[0.3em] text-[#444] uppercase">Designed with Authenticity</span>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 1. LOADING CURTAIN ---
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.style.transform = 'translateY(-100%)';
+            }, 2200);
+
+            // --- 2. CUSTOM CURSOR ---
+            const cursor = document.getElementById('cursor');
+            const cursorDot = document.getElementById('cursor-dot');
+
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                cursorDot.style.left = e.clientX + 'px';
+                cursorDot.style.top = e.clientY + 'px';
+            });
+
+            // Hover effects for cursor
+            const links = document.querySelectorAll('a, button, .play-btn, input, textarea');
+            links.forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                    cursor.style.background = 'rgba(212, 175, 55, 0.1)';
+                });
+                link.addEventListener('mouseleave', () => {
+                    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                    cursor.style.background = 'transparent';
+                });
+            });
+
+            // --- 3. SCROLL REVEAL ANIMATION ---
+            const reveals = document.querySelectorAll('.reveal');
+
+            const revealOnScroll = () => {
+                const windowHeight = window.innerHeight;
+                const elementVisible = 100;
+
+                reveals.forEach((reveal) => {
+                    const elementTop = reveal.getBoundingClientRect().top;
+                    if (elementTop < windowHeight - elementVisible) {
+                        reveal.classList.add('active');
+                    }
+                });
+            };
+            window.addEventListener('scroll', revealOnScroll);
+            revealOnScroll(); // Trigger once on load
+
+            // --- 4. PARALLAX EFFECT ---
+            const parallaxWrapper = document.querySelector('.parallax-wrapper');
+            window.addEventListener('scroll', () => {
+                const scrolled = window.scrollY;
+                parallaxWrapper.style.transform = `translateY(${scrolled * 0.5}px)`;
+            });
+
+            // --- 5. FORM INPUT ANIMATIONS ---
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    input.nextElementSibling.style.top = '-20px';
+                    input.nextElementSibling.style.fontSize = '12px';
+                    input.nextElementSibling.style.color = '#d4af37';
+                });
+                input.addEventListener('blur', () => {
+                    if(input.value === "") {
+                        input.nextElementSibling.style.top = '12px';
+                        input.nextElementSibling.style.fontSize = '16px';
+                        input.nextElementSibling.style.color = '#6b7280';
+                    }
+                });
+            });
+
+            // --- 6. MUSIC PLAYER SIMULATION ---
+            const playBtns = document.querySelectorAll('.play-btn');
+            
+            playBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    const bar = this.parentElement.parentElement.querySelector('.progress-bar');
+                    
+                    // Reset all others
+                    playBtns.forEach(otherBtn => {
+                        if(otherBtn !== this) {
+                            otherBtn.querySelector('i').classList.remove('fa-pause');
+                            otherBtn.querySelector('i').classList.add('fa-play');
+                            otherBtn.parentElement.parentElement.querySelector('.progress-bar').style.width = '0';
+                        }
+                    });
+
+                    if(icon.classList.contains('fa-play')) {
+                        icon.classList.remove('fa-play');
+                        icon.classList.add('fa-pause');
+                        // Simulate progress
+                        bar.style.width = '100%';
+                    } else {
+                        icon.classList.remove('fa-pause');
+                        icon.classList.add('fa-play');
+                        bar.style.width = '0';
+                    }
+                });
+            });
+
+            // --- 7. FLOATING NOTES GENERATOR ---
+            const notesContainer = document.getElementById('notes-container');
+            const symbols = ['♪', '♫', '♩', '♬', '♭', '♮', '♯'];
+
+            function createNote() {
+                const note = document.createElement('div');
+                note.classList.add('note');
+                note.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                
+                // Randomize position and size
+                note.style.left = Math.random() * 100 + 'vw';
+                note.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+                note.style.animationDuration = (Math.random() * 5 + 5) + 's'; // 5 to 10 seconds
+                
+                notesContainer.appendChild(note);
+
+                // Remove after animation
+                setTimeout(() => {
+                    note.remove();
+                }, 10000);
+            }
+
+            // Create a note every 800ms
+            setInterval(createNote, 800);
+        });
+    </script>
+</body>
+</html>
